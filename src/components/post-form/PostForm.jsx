@@ -41,9 +41,7 @@ function PostForm({post}) {
             if (file) {
                 const fileId = file.$id;
                 data.featuredImage = fileId;
-                console.log(idofuser)
                 const userid= idofuser.$id;
-                console.log(userid)
                 data.UserId=userid;
                 const dbPost = await service.CreatePost({ ...data });
 
