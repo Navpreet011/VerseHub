@@ -15,7 +15,7 @@ function Home() {
         })
     }, [])
 
-    if (posts.length === 0) {
+    if(authStatus === false) {
         return (
             <div className="w-full py-8 mt-0 text-center">
                 <Container>
@@ -46,7 +46,7 @@ function Home() {
                               </div>
                             </div>
                             <h1 className="text-2xl font-bold hover:text-gray-500 mt-12">
-                               {authStatus? "You can add your Blog":"Login to read Blogs"}
+                               Login to read Blogs
                             </h1>
                         </div>
                         
