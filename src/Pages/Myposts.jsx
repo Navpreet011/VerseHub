@@ -6,24 +6,21 @@ import { PostCard ,Container} from '../components'
 function Myposts() {
   
   const userData = useSelector((state) => state.auth.UserData);
-  const idofuser= userData.UserData;
+  const idofuser= userData ? userData.UserData : null;
   const [posts,setposts]=useState([]);
-  let arry = []
+  useEffect(() => {
+    if (!idofuser) return; // Exit early if user data is not available
 
-    useEffect(() => {
-        service.getPosts().then((response) => {
-            if (response) {
-                const data = response.documents;
-                data.map((res)=> {
-                  if(res.UserId===idofuser.$id)
-                  {
-                    arry.push(res);
-                  }
-                })
-                setposts(arry);
-            }
-        })
-    }, [])
+    service.getPosts().then((response) => {
+        if (response && response.documents) {
+            // Filter posts by the user's ID
+            const userPosts = response.documents.filter((res) => res.UserId === idofuser.$id);
+            setPosts(userPosts);
+        }
+    }).catch(error => {
+        console.error("Error fetching posts:", error);
+    });
+  }, [idofuser]); 
     
 
   return (
