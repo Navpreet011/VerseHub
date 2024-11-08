@@ -15,7 +15,7 @@ function Myposts() {
         if (response && response.documents) {
             // Filter posts by the user's ID
             const userPosts = response.documents.filter((res) => res.UserId === idofuser.$id);
-            setPosts(userPosts);
+            setposts(userPosts);
         }
     }).catch(error => {
         console.error("Error fetching posts:", error);
