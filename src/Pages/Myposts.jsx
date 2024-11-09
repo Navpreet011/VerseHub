@@ -8,34 +8,56 @@ function Myposts() {
   const userData = useSelector((state) => state.auth.UserData);
   const idofuser= userData ? userData.UserData : null;
   const [posts,setposts]=useState([]);
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
-    if (!idofuser) return; // Exit early if user data is not available
+    // Only run if `idofuser` is defined
+    if (idofuser) {
+        setLoading(true);
 
-    service.getPosts().then((response) => {
-        if (response && response.documents) {
-            // Filter posts by the user's ID
-            const userPosts = response.documents.filter((res) => res.UserId === idofuser.$id);
-            setposts(userPosts);
-        }
-    }).catch(error => {
-        console.error("Error fetching posts:", error);
-    });
-  }, [idofuser]); 
-    
+        // Fetch posts after delay to ensure `userData` is available
+        setTimeout(() => {
+            service.getPosts()
+                .then((response) => {
+                    if (response?.documents) {
+                        const userPosts = response.documents.filter(
+                            (post) => post.UserId === idofuser.$id
+                        );
+                        setposts(userPosts);
+                    } else {
+                        setposts([]);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching posts:", error);
+                    setposts([]); // Handle error by setting posts to an empty array
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }, 500); // Adjust delay time as needed
+    }
+}, [idofuser]); // Re-run effect when `idofuser` changes
 
-  return (
+return (
     <div className='w-full py-8'>
         <Container>
-            <div className='flex flex-wrap'>
+            {loading ? (
+                <p>Loading posts...</p>
+            ) : posts.length > 0 ? (
+                <div className='flex flex-wrap'>
                     {posts.map((post) => (
                         <div key={post.$id} className='p-2 w-1/4'>
                             <PostCard {...post} />
                         </div>
                     ))}
-            </div>
+                </div>
+            ) : (
+                <p>No posts available.</p>
+            )}
         </Container>
     </div>
-  )
+);
 }
 
 export default Myposts
